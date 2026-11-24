@@ -1,0 +1,94 @@
+志愿星图 · 开发环境与运行说明
+========================================
+
+一、开发电脑
+操作系统：Windows 11 家庭版 中文版 64 位
+系统版本：10.0.26200
+设备型号：LENOVO 83DF
+处理器：Intel Core i9-14900HX（24 核 / 32 线程）
+内存：32 GB
+屏幕：1920 × 1080
+
+二、开发与测试工具
+1. 编码代理：DeepSeek Harness（本会话的 AI 编码工具）
+2. 命令行：Windows PowerShell 5.1.26100.9711
+3. Python：3.11.9（系统安装，用于启动数据库查看器）
+4. Node.js：v24.22.1；npm：11.19.1（用于浏览器自动化测试）
+5. 浏览器：
+   - Google Chrome 156.0.8078.80
+   - Microsoft Edge 156.0.4314.58
+6. 数据库：SQLite
+   - 系统 Python 内置 SQLite 3.45.1
+   - 生成数据库使用 DSH 自带 Python 3.12.14 的 SQLite 3.53.1
+
+三、数据处理与文档生成
+1. Python 3.12.14（DSH 运行时，生成数据/数据库/图标/Excel 时使用）
+2. pandas 3.0.1：读取、清洗、聚合公开录取 CSV
+3. openpyxl 3.1.5：生成需求规格说明书 Excel
+4. Pillow 12.3.0：生成软件图标、数据库查看器图标
+5. urllib / sqlite3 / json：下载与本地数据转换
+6. 数据来源：
+   - 掌上高考 2025 院校级/分专业录取数据
+   - GaokaoCompass 2023–2024 院校级历史数据、2025 一分一段/批次线
+   - 经 GitHub 项目 gaokao-admission-crawler 汇总
+
+四、软件运行架构
+1. 主软件：原生 HTML + CSS + JavaScript，无 React/Vue、无 Webpack/Vite、无后端框架。
+2. 主软件数据：assets/data.js（window.GK_DATA）。
+3. 主软件启动：桌面快捷方式 → 启动.vbs → Chrome/Edge 的 --app 模式打开 file:// 页面。
+4. 主软件不联网、不需要服务器；启动先进入选择页，游客模式一键进入，登录为可选增强；查询、推荐、收藏都在本机完成。
+5. 数据库查看器：Python 标准库 http.server + sqlite3 的本地只读服务，监听 127.0.0.1:8765。
+6. 数据库：D:\高考志愿填报助手\database\gaokao.db，标准 SQLite，可用 DB Browser for SQLite 打开。
+7. 数据库是“检查用镜像库”，由 assets/data.js 同步生成；主软件运行时仍读取 data.js。
+
+五、主要技术栈对照
+- 界面：HTML5 / CSS3 / 原生 JavaScript（ES6+）
+- 数据：JSON + SQLite 3
+- 数据处理：Python + pandas
+- 桌面启动：VBScript + Chrome/Edge app 模式
+- 本地服务：Python http.server（仅数据库查看器）
+- 文档：openpyxl 生成 .xlsx
+- 测试：Chrome Headless + CDP（Node.js WebSocket）/ PowerShell
+- 版本控制/部署：本地文件部署到 D 盘 + 桌面快捷方式
+
+六、没有使用的东西（避免误解）
+- 没有 MySQL、SQL Server、Oracle
+- 没有 Java / Spring Boot
+- 没有 Node 后端、没有 Express/Koa
+- 没有 React / Vue / Angular
+- 没有云服务器、没有在线数据库
+- 没有付费 API；数据来自公开渠道整理
+
+七、怎么看/怎么给老师演示
+1. 双击桌面“高考志愿填报助手” → 看主软件。
+2. 双击桌面“数据库查看器” → 看 SQLite 数据表、SQL 查询、表结构。
+3. 打开 D:\高考志愿填报助手\README.md → 看数据来源、目录、数据结构。
+4. 打开 D:\高考志愿填报助手\使用说明.txt → 看账号、功能、操作。
+5. 打开 D:\高考志愿填报助手\database\数据库说明.txt → 看数据库表清单和检查步骤。
+6. 打开 D:\高考志愿填报助手\database\schema.sql → 看建表/视图/索引 SQL。
+7. 打开 D:\高考志愿填报助手\database\示例查询.sql → 复制 SQL 到查看器执行。
+8. 桌面《志愿星图_高考志愿智能填报系统_需求规格说明书_V2.0.xlsx》→ 看需求、业务规则、数据字典、验收标准。
+
+八、老师可自行核对的命令
+在 PowerShell 中执行：
+
+  python --version
+  python -c "import sqlite3; print(sqlite3.sqlite_version)"
+  node --version
+  (Get-Item 'C:\Program Files\Google\Chrome\Application\chrome.exe').VersionInfo.ProductVersion
+  (Get-Item 'C:\Program Files (x86)\Microsoft\Edge\Application\msedge.exe').VersionInfo.ProductVersion
+  Get-ComputerInfo | Select-Object WindowsProductName,WindowsVersion,OsBuildNumber
+
+查看数据库表：
+
+  python -c "import sqlite3; c=sqlite3.connect(r'D:\高考志愿填报助手\database\gaokao.db'); print([r[0] for r in c.execute('select name from sqlite_master')])"
+
+九、部署位置
+主软件：D:\高考志愿填报助手
+数据库：D:\高考志愿填报助手\database
+桌面快捷方式：
+- 高考志愿填报助手
+- 数据库查看器
+需求规格说明书：桌面 Excel 文件
+
+说明：本文件用于课程作业的“开发环境说明”，与软件、数据库、需求规格说明书配套。
